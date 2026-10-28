@@ -127,20 +127,27 @@
                                 <i data-lucide="rotate-ccw" class="w-4 h-4 text-amber-500"></i>
                                 <span>重置進度</span>
                             </button>
-                            <button onclick="resetParticipantSession()" title="重新登入" class="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition">
-                                <i data-lucide="log-out" class="w-5 h-5"></i>
+                            <!-- Switch/Reset Reader button on the right of Reset Progress -->
+                            <button onclick="openLogoutModal()" title="結束本次任務並清除資料回到起始畫面" class="px-3 py-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 hover:border-rose-200 transition flex items-center gap-1.5 text-xs font-bold">
+                                <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i>
+                                <span>結束並登出</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Point Badge Collection Grid -->
                     <div class="pt-5">
-                        <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
                             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                                 <i data-lucide="award" class="w-4 h-4"></i>
                                 <span>資料庫探索集點卡</span>
                             </h3>
-                            <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">每日 00:00 自動重置</span>
+                            <div class="flex items-center gap-1.5 text-xs font-semibold bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100 shadow-sm">
+                                <i data-lucide="clock" class="w-3.5 h-3.5 text-blue-500 animate-pulse"></i>
+                                <span>每日 00:00 自動重置</span>
+                                <span class="text-slate-300">|</span>
+                                <span class="font-mono text-blue-800 font-bold" id="daily-countdown-display">計算中...</span>
+                            </div>
                         </div>
                         <div id="points-grid" class="grid grid-cols-3 sm:grid-cols-5 gap-3">
                             <!-- Dynamic point items rendered here -->
@@ -265,19 +272,20 @@
                         <p class="text-[10px] text-blue-500">用於進入後台、現場兌獎核銷以及手動重置進度</p>
                     </div>
 
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-slate-600">關卡與題庫維護</span>
-                        <button onclick="openTaskModal()" class="w-full py-2.5 gradient-bg text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5 mt-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                            <span>新增資料庫關卡與題庫</span>
-                        </button>
+                    <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex flex-col justify-between">
+                        <span class="text-xs font-bold text-emerald-800">題庫規則設定</span>
+                        <div class="text-xs text-emerald-700 space-y-1 mt-1">
+                            <p>• A～D 題組：各自隨機抽出一題</p>
+                            <p>• E 題組：固定題目（Teamplus 頻道）</p>
+                            <p>• 闖關順序：A～E 隨機排序</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="space-y-3 pt-2">
                     <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-1.5">
                         <i data-lucide="qr-code" class="w-4 h-4 text-blue-600"></i>
-                        <span>資料庫點位專屬 QR Code 與題庫列表</span>
+                        <span>資料庫點位專屬 QR Code 與固定題庫內容</span>
                     </h3>
 
                     <div id="admin-tasks-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -369,57 +377,6 @@
         </div>
     </div>
 
-    <!-- Modal 3: Task Add/Edit Modal -->
-    <div id="task-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-lg text-slate-800 space-y-4 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-            <button onclick="closeTaskModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full transition">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-
-            <div>
-                <h3 id="task-modal-title" class="text-xl font-bold text-slate-900">新增/編輯資料庫關卡與題庫</h3>
-                <p class="text-xs text-slate-500 mt-0.5">此 QR Code 關卡可設定多筆題目，讀者進行到該關卡時將隨機抽出一題顯示。</p>
-            </div>
-
-            <form id="task-form" onsubmit="handleTaskSave(event)" class="space-y-4">
-                <input type="hidden" id="task-id">
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">QR Code 識別碼 (Token)</label>
-                        <input type="text" id="task-code" required placeholder="例如：TASK_A" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">資料庫/點位名稱</label>
-                        <input type="text" id="task-name" required placeholder="例如：電子期刊檢索區" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                </div>
-
-                <!-- Dynamic Question Pool Container -->
-                <div class="border-t border-slate-200 pt-3 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <label class="block text-xs font-extrabold text-blue-700 uppercase tracking-wider flex items-center gap-1">
-                            <i data-lucide="layers" class="w-4 h-4"></i>
-                            <span>專屬題庫設定 (抽題用)</span>
-                        </label>
-                        <button type="button" onclick="addQuestionToPoolUI()" class="px-2.5 py-1 text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition flex items-center gap-1">
-                            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-                            <span>新增題目</span>
-                        </button>
-                    </div>
-
-                    <div id="question-pool-container" class="space-y-3">
-                        <!-- Dynamic Question Items Rendered Here -->
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full py-3 gradient-bg text-white font-bold text-sm rounded-xl shadow-lg transition mt-4">
-                    儲存關卡與題庫
-                </button>
-            </form>
-        </div>
-    </div>
-
     <!-- Modal 4: Admin Manual Reset Modal -->
     <div id="manual-reset-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-slate-800 space-y-5 relative shadow-2xl text-center">
@@ -474,75 +431,131 @@
         </div>
     </div>
 
+    <!-- Modal 6: Logout Confirm Modal (Replaces browser confirm) -->
+    <div id="logout-confirm-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-slate-800 space-y-5 relative shadow-2xl text-center">
+            <button onclick="closeLogoutModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                <i data-lucide="log-out" class="w-8 h-8"></i>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-extrabold text-slate-900">結束並登出任務</h3>
+                <p class="text-xs text-slate-500 mt-1">確定要結束本次任務嗎？將清除目前讀者資料與闖關集點進度，返回填寫讀者基本資料的起始畫面。</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="closeLogoutModal()" class="py-3 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition">
+                    取消
+                </button>
+                <button onclick="confirmLogoutAndResetAll()" class="py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition">
+                    確認清除登出
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Library Database Default Tasks Seed with 3 Question Pool per Task Code
-        const DEFAULT_TASKS = [
-            { 
-                id: 't1', 
-                code: 'TASK_A', 
-                name: '任務 A：電子期刊與核心數據庫檢索區', 
+        // Library Database Fixed Task Question Sets (A-E)
+        const FIXED_TASKS = [
+            {
+                id: 't1',
+                code: 'TASK_A',
+                name: 'A 題組：飛資得醫學資料庫',
                 questions: [
-                    { title: '任務 A：IEEE Xplore / ScienceDirect 終端檢索點', desc: '請至 2 樓電子資源檢索區 01 號檢索台旁，尋找任務 A 專屬解密 QR Code。' },
-                    { title: '任務 A：JCR 期刊影響指數查詢區看板', desc: '請前往 2 樓數位學習中心「JCR 期刊評比指南」立牌側邊，掃描任務 A 條碼。' },
-                    { title: '任務 A：Web of Science 文獻資料庫探索點', desc: '請尋找電子資源檢索區柱面上的任務 A 告示牌進行掃描集點。' }
+                    {
+                        title: '哪個資料庫主要收錄人體各部位解剖3D圖像,對於製作學習教材或是對於民眾衛教非常有幫助?',
+                        desc: '飛資得醫學-請至該攤位回答正確的資料庫名稱即可獲得1點'
+                    },
+                    {
+                        title: '若是想了解藥物間的的交互作用, 或是想要知道藥物的外觀可以使用哪個資料庫查詢?',
+                        desc: '飛資得醫學-請至該攤位回答正確的資料庫名稱即可獲得1點'
+                    },
+                    {
+                        title: '醫院除了PubMed以外, 購入哪個平台可以進行整合查詢同時查到ClinicalKey, Medline with fulltext, Uptodate等跨資料庫的資料?',
+                        desc: '飛資得醫學-請至該攤位回答正確的資料庫名稱即可獲得1點'
+                    }
                 ]
             },
-            { 
-                id: 't2', 
-                code: 'TASK_B', 
-                name: '任務 B：臺灣博碩士論文與學術典藏區', 
+            {
+                id: 't2',
+                code: 'TASK_B',
+                name: 'B 題組：Elsevier 資料庫',
                 questions: [
-                    { title: '任務 B：博碩士論文紙本與數位調閱台', desc: '請前往 3 樓博碩士論文專區流通諮詢台，掃描標有任務 B 的專屬 QR Code。' },
-                    { title: '任務 B：機構典藏 (IR) 系統推廣專區', desc: '請查看 3 樓學術著作展覽架側邊，掃描任務 B 條碼完成資料庫解密。' },
-                    { title: '任務 B：學位論文上傳與審核服務站', desc: '請前往論文上傳專用電腦旁，掃描任務 B 告示牌完成集點。' }
+                    {
+                        title: '如果我想要同時查詢電子書及期刊文獻並且可將圖像直接匯出成Power Point該使用哪個資料庫?', 
+                        desc: 'Elsevier-請至攤位回答正確的資料庫名稱即可獲得1點' 
+                    },
+                    { 
+                        title: '哪個資料庫是屬於實證研究重要的查詢平台，並有PICO、Emtree等工具協助使用者查到更全面性的文獻?', 
+                        desc: 'Elsevier-請至該攤位回答正確的資料庫名稱即可獲得1點' 
+                    }
                 ]
             },
             { 
                 id: 't3', 
                 code: 'TASK_C', 
-                name: '任務 C：數位微縮史料與古籍特藏資料庫', 
+                name: 'C 題組：UpToDate 實證醫學專區', 
                 questions: [
-                    { title: '任務 C：微縮膠卷閱讀機與特藏文獻區', desc: '請前往 4 樓特藏文獻庫入口展覽櫥窗旁，掃描任務 C 標籤即可解鎖本關卡。' },
-                    { title: '任務 C：臺灣日治時期數位報紙資料庫', desc: '請前往 4 樓數位人文研討室前看板，尋找任務 C 專屬 QR Code。' },
-                    { title: '任務 C：珍善本書庫數位掃描體驗台', desc: '尋找特藏室古籍數位化成果展台旁的任務 C QR Code 進行掃描。' }
+                    { 
+                        title: '張醫師正在查詢臨床實證資料，透過資料庫他可以依據實證GRADE分級的標示得知該文獻於臨床建議的「強度」與「證據品質」，請問他有可能使用的是哪個資料庫？', 
+                        desc: 'UpToDate-請至該攤位回答正確的資料庫名稱即可獲得1點' 
+                    },
+                    { 
+                        title: '哪個資料庫由全球各專科的臨床專家撰寫與審查，涵蓋20多個醫學專科、上萬篇主題文章，並同時提供藥物交互作用工具，近期更是導入AI加強搜尋功能，讓檢索結果更為精準？', 
+                        desc: 'UpToDate-請至該攤位回答正確的資料庫名稱即可獲得1點' 
+                    }
                 ]
             },
             { 
                 id: 't4', 
                 code: 'TASK_D', 
-                name: '任務 D：館際合作與電子書整合平台', 
+                name: 'D 題組：凌網知識中文電子書專區', 
                 questions: [
-                    { title: '任務 D：HyRead / 台灣雲端書庫電子書體驗區', desc: '請尋找 1 樓電子書平板體驗閱覽桌側邊的任務 D 宣傳立牌並完成掃描。' },
-                    { title: '任務 D：全國文獻傳遞服務 (NDDS) 諮詢窗口', desc: '請至 1 樓參考諮詢櫃台 NDDS 申請指南旁，掃描任務 D QR Code。' },
-                    { title: '任務 D：跨校借書證與借還書智慧取書櫃', desc: '前往大廳 24 小時智慧自助借還書機旁，尋找任務 D 專屬條碼。' }
+                    { 
+                        title: '今日參展中有一家是本院中文電子書平台其中之一，請問是哪一個平台？', 
+                        desc: '凌網知識-請至該攤位回答正確的資料庫名稱即可獲得1點' 
+                    },
+                    { 
+                        title: '這個資料庫主要為院內中文圖書的電子書平台之一，請問是哪個一個平台？', 
+                        desc: '凌網知識-請至該攤位回答正確的資料庫名稱即可獲得1點' 
+                    }
                 ]
             },
             { 
                 id: 't5', 
                 code: 'TASK_E', 
-                name: '任務 E：全球專利與商管金融資料庫專區', 
+                name: 'E 題組：圖書館頻道服務專區', 
                 questions: [
-                    { title: '任務 E：Derwent / 全球專利檢索研究站', desc: '請前往 2 樓商管專利資料專區研究小間 203 外牆，掃描任務 E 關卡條碼。' },
-                    { title: '任務 E：TEJ 台灣經濟新報 / Bloomberg 金融數據終端', desc: '前往財金專業數據分析室入口看板，掃描任務 E 關卡標籤。' },
-                    { title: '任務 E：產業趨勢報告與市場情報諮詢台', desc: '至產業研究專用電腦桌側邊，掃描任務 E QR Code 完成解密任務。' }
+                    { 
+                        title: '請加入Teamplus【圖書館】資源服務&諮詢頻道', 
+                        desc: '請找圖書館館員掃描即可獲得一點' 
+                    }
                 ]
             }
         ];
 
-        // Global State Variables
-        let tasks = JSON.parse(localStorage.getItem('qr_tasks')) || DEFAULT_TASKS;
-        let targetPoints = parseInt(localStorage.getItem('qr_target_points')) || 5;
+        // Global State Variables - 題庫固定由 FIXED_TASKS 控制
+        let tasks = FIXED_TASKS;
+        let targetPoints = 5;
         let currentUser = JSON.parse(localStorage.getItem('qr_current_user')) || null;
         let participantsData = JSON.parse(localStorage.getItem('qr_participants_log')) || {};
         let isAdminAuthenticated = false;
 
         let html5QrcodeScanner = null;
+        let countdownTimerInterval = null;
 
         // Initialize App on DOM Load
         window.addEventListener('DOMContentLoaded', () => {
+            // 同步最新題目資料
+            tasks = FIXED_TASKS;
             lucide.createIcons();
             checkAndResetDailyData();
             initAppUI();
+            startMidnightCountdown();
         });
 
         function getTodayString() {
@@ -551,6 +564,35 @@
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
+        }
+
+        function startMidnightCountdown() {
+            if (countdownTimerInterval) clearInterval(countdownTimerInterval);
+
+            function updateTimer() {
+                const now = new Date();
+                const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+                const diffMs = nextMidnight - now;
+
+                if (diffMs <= 0) {
+                    checkAndResetDailyData();
+                    initAppUI();
+                    return;
+                }
+
+                const totalSec = Math.floor(diffMs / 1000);
+                const hrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+                const secs = String(totalSec % 60).padStart(2, '0');
+
+                const countdownEl = document.getElementById('daily-countdown-display');
+                if (countdownEl) {
+                    countdownEl.textContent = `剩餘 ${hrs}:${mins}:${secs}`;
+                }
+            }
+
+            updateTimer();
+            countdownTimerInterval = setInterval(updateTimer, 1000);
         }
 
         function checkAndResetDailyData() {
@@ -682,24 +724,24 @@
         function generateUserRandomSequence() {
             if (!currentUser) return;
 
-            let availableTasks = [...tasks];
-            for (let i = availableTasks.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [availableTasks[i], availableTasks[j]] = [availableTasks[j], availableTasks[i]];
-            }
-
-            currentUser.sequence = availableTasks.slice(0, targetPoints).map(t => t.code);
-            currentUser.targetPoints = targetPoints;
-
-            if (!currentUser.assignedQuestions) currentUser.assignedQuestions = {};
-
-            currentUser.sequence.forEach(code => {
-                const taskObj = tasks.find(t => t.code === code);
-                if (taskObj && taskObj.questions && taskObj.questions.length > 0) {
+            // 1. A-D 各自隨機抽出一題，E 固定題目
+            currentUser.assignedQuestions = {};
+            tasks.forEach(taskObj => {
+                if (taskObj.questions && taskObj.questions.length > 0) {
                     const randomQ = taskObj.questions[Math.floor(Math.random() * taskObj.questions.length)];
-                    currentUser.assignedQuestions[code] = randomQ;
+                    currentUser.assignedQuestions[taskObj.code] = randomQ;
                 }
             });
+
+            // 2. A-E 關卡出現順序隨機洗牌
+            let codes = ['TASK_A', 'TASK_B', 'TASK_C', 'TASK_D', 'TASK_E'];
+            for (let i = codes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [codes[i], codes[j]] = [codes[j], codes[i]];
+            }
+
+            currentUser.sequence = codes.slice(0, targetPoints);
+            currentUser.targetPoints = targetPoints;
 
             saveCurrentUserData();
         }
@@ -721,12 +763,54 @@
             localStorage.setItem('qr_participants_log', JSON.stringify(participantsData));
         }
 
-        function resetParticipantSession() {
-            if (confirm("確定要登出目前讀者帳號嗎？")) {
-                currentUser = null;
-                localStorage.removeItem('qr_current_user');
-                initAppUI();
+        function openLogoutModal() {
+            const modal = document.getElementById('logout-confirm-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            } else {
+                confirmLogoutAndResetAll();
             }
+        }
+
+        function closeLogoutModal() {
+            const modal = document.getElementById('logout-confirm-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function confirmLogoutAndResetAll() {
+            closeLogoutModal();
+
+            // 如果有讀者資料，從本地紀錄中清除當前讀者的個別記錄
+            if (currentUser && currentUser.empId && participantsData[currentUser.empId]) {
+                delete participantsData[currentUser.empId];
+                localStorage.setItem('qr_participants_log', JSON.stringify(participantsData));
+            }
+
+            // 完全重置當前使用者狀態與暫存
+            currentUser = null;
+            localStorage.removeItem('qr_current_user');
+
+            // 清空登記表單欄位
+            const nameInp = document.getElementById('reg-name');
+            const empIdInp = document.getElementById('reg-empid');
+            const deptInp = document.getElementById('reg-dept');
+            if (nameInp) nameInp.value = '';
+            if (empIdInp) empIdInp.value = '';
+            if (deptInp) deptInp.value = '';
+
+            // 清除掃描器反饋與兌換印章
+            const redeemedStamp = document.getElementById('redeemed-stamp');
+            if (redeemedStamp) redeemedStamp.classList.add('hidden');
+
+            // 確保切換回讀者填寫基本資料的起始頁面
+            switchView('player');
+            initAppUI();
+        }
+
+        function resetParticipantSession() {
+            openLogoutModal();
         }
 
         function renderPointsGridAndCurrentMission() {
@@ -819,7 +903,7 @@
                 document.getElementById('mission-total-num').textContent = targetPoints;
                 document.getElementById('mission-qr-code-target').textContent = nextMissionCode;
                 document.getElementById('mission-title').textContent = assignedQ.title;
-                document.getElementById('mission-desc').textContent = assignedQ.desc;
+                document.getElementById('mission-desc').innerHTML = `<span class="inline-block px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 font-bold mr-1.5 text-xs">💡 提示</span>${assignedQ.desc}`;
             }
 
             lucide.createIcons();
@@ -993,14 +1077,15 @@
 
         function updateTargetPoints() {
             const val = parseInt(document.getElementById('setting-target-points').value);
-            if (val && val > 0) {
+            if (val && val > 0 && val <= 5) {
                 targetPoints = val;
-                localStorage.setItem('qr_target_points', targetPoints);
                 alert(`已成功更新目標點數為 ${targetPoints} 點！`);
                 if (currentUser) {
                     generateUserRandomSequence();
                 }
                 renderAdminDashboard();
+            } else {
+                alert("點數設定範圍為 1 ~ 5 點！");
             }
         }
 
@@ -1018,58 +1103,45 @@
                 const qrContainerId = `qr-canvas-${t.id}`;
                 const qCount = t.questions ? t.questions.length : 0;
 
-                let questionsListHTML = '';
-                if (t.questions && t.questions.length > 0) {
-                    questionsListHTML = t.questions.map((q, qidx) => `
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs space-y-0.5">
-                            <div class="font-bold text-slate-800 flex items-center gap-1.5">
-                                <span class="w-4 h-4 rounded-full bg-blue-100 text-blue-700 font-mono text-[10px] flex items-center justify-center shrink-0">${qidx + 1}</span>
-                                <span class="truncate">${q.title}</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 line-clamp-1 pl-5">${q.desc}</p>
+                let questionsListHTML = t.questions.map((q, qidx) => `
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs space-y-1">
+                        <div class="font-bold text-slate-800 flex items-start gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-blue-100 text-blue-700 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">${qidx + 1}</span>
+                            <span class="leading-snug">${q.title}</span>
                         </div>
-                    `).join('');
-                } else {
-                    questionsListHTML = `<p class="text-xs text-slate-400 italic">尚無題庫題目</p>`;
-                }
+                        <div class="text-[11px] text-amber-700 bg-amber-50/80 px-2 py-1 rounded-md border border-amber-100/60 pl-5">
+                            <span class="font-bold">提示：</span>${q.desc}
+                        </div>
+                    </div>
+                `).join('');
 
                 card.innerHTML = `
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-mono font-bold text-xs border border-blue-100">
-                                    ${t.code}
-                                </span>
-                                <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-bold text-[10px]">
-                                    題庫：${qCount} 題
-                                </span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <button onclick="editTask('${t.id}')" title="編輯關卡與題庫" class="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg transition">
-                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="deleteTask('${t.id}')" title="刪除關卡" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition">
-                                    <i data-lucide="trash" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+                            <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-mono font-bold text-xs border border-blue-100">
+                                ${t.code}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-md ${t.code === 'TASK_E' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-600'} font-bold text-[10px]">
+                                ${t.code === 'TASK_E' ? '固定題 (1題)' : `題庫隨機 (${qCount}題選1)`}
+                            </span>
                         </div>
 
                         <div>
-                            <h4 class="font-bold text-slate-900 text-sm">${t.name || t.code}</h4>
+                            <h4 class="font-bold text-slate-900 text-sm">${t.name}</h4>
                         </div>
 
                         <div class="space-y-1.5 pt-1">
                             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                                <span>子題庫清單</span>
+                                <span>題庫清單</span>
                             </div>
-                            <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                            <div class="space-y-2 max-h-44 overflow-y-auto pr-1">
                                 ${questionsListHTML}
                             </div>
                         </div>
 
                         <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex flex-col items-center justify-center pt-3">
                             <div id="${qrContainerId}" class="p-2 bg-white rounded-xl shadow-sm border border-slate-200"></div>
-                            <span class="text-[10px] font-mono font-bold text-slate-400 mt-2">掃描 Code: ${t.code}</span>
+                            <span class="text-[10px] font-mono font-bold text-slate-400 mt-2">掃描識別碼: ${t.code}</span>
                         </div>
                     </div>
                 `;
