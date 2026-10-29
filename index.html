@@ -21,22 +21,22 @@
         .pulse-active { animation: pulse-subtle 2.5s infinite ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 antialiased pb-12 selection:bg-blue-600 selection:text-white">
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased pb-12 selection:bg-blue-600 selection:text-white flex flex-col justify-between">
 
     <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-200/80 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
                     <i data-lucide="book-open-check" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-slate-900 text-lg leading-tight">圖書館資料庫解密集點任務</h1>
+                    <h1 class="font-extrabold text-slate-900 text-base sm:text-lg leading-tight">圖書館資料庫解密集點任務</h1>
                     <p class="text-xs text-slate-500 font-medium">讀者智慧探索平台</p>
                 </div>
             </div>
 
             <!-- View Switcher Tabs -->
-            <div class="flex items-center gap-1 bg-slate-200/70 p-1 rounded-xl">
+            <div class="flex items-center gap-1 bg-slate-200/70 p-1 rounded-xl shrink-0">
                 <button id="nav-player-btn" onclick="switchView('player')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 bg-white text-blue-600 shadow-sm flex items-center gap-1.5">
                     <i data-lucide="compass" class="w-4 h-4"></i>
                     <span>讀者集點</span>
@@ -49,9 +49,9 @@
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 pt-6">
+    <main class="w-full px-4 sm:px-6 lg:px-8 pt-6 flex-1">
 
-        <section id="player-view" class="space-y-6">
+        <section id="player-view" class="space-y-6 w-full max-w-5xl mx-auto">
 
             <!-- Registration Card (if not registered) -->
             <div id="registration-card" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100 max-w-lg mx-auto">
@@ -60,20 +60,20 @@
                         <i data-lucide="library" class="w-8 h-8"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-slate-900">歡迎參加資料庫解密任務</h2>
-                    <p class="text-slate-500 text-sm mt-1">請填寫讀者基本資料，啟動個人專屬館藏探索關卡</p>
+                    <p class="text-slate-500 text-sm mt-1">請填寫挑戰者基本資料，啟動個人專屬館藏探索關卡</p>
                 </div>
 
                 <form id="reg-form" onsubmit="handleRegistration(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">讀者姓名</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">挑戰者姓名</label>
                         <div class="relative">
                             <i data-lucide="user" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="reg-name" required placeholder="請輸入讀者姓名" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium transition-all outline-none">
+                            <input type="text" id="reg-name" required placeholder="請輸入挑戰者姓名" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium transition-all outline-none">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">借閱證號 / 學工號</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">員工編號</label>
                         <div class="relative">
                             <i data-lucide="id-card" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                             <input type="text" id="reg-empid" required placeholder="例如：LIB202601" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium transition-all outline-none">
@@ -81,10 +81,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">所屬學院 / 系所單位</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">單位名稱</label>
                         <div class="relative">
                             <i data-lucide="graduation-cap" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="reg-dept" required placeholder="例如：資訊學院 / 圖書資訊處" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium transition-all outline-none">
+                            <input type="text" id="reg-dept" required placeholder="例如：資訊處 / 護理部" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium transition-all outline-none">
                         </div>
                     </div>
 
@@ -103,14 +103,14 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10 border-b border-slate-100 pb-5">
                         <div class="flex items-center gap-4">
                             <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-2xl shadow-lg shadow-blue-200">
-                                <span id="user-avatar">讀</span>
+                                <span id="user-avatar">挑</span>
                             </div>
                             <div>
                                 <div class="flex items-center gap-2">
                                     <h2 id="user-name-display" class="text-xl font-extrabold text-slate-900">載入中...</h2>
                                     <span id="user-dept-tag" class="px-2.5 py-0.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-full border border-blue-100">單位</span>
                                 </div>
-                                <p class="text-xs font-medium text-slate-500 mt-0.5">證號：<span id="user-empid-display" class="font-mono text-slate-700">---</span></p>
+                                <p class="text-xs font-medium text-slate-500 mt-0.5">員工編號：<span id="user-empid-display" class="font-mono text-slate-700">---</span></p>
                             </div>
                         </div>
 
@@ -122,16 +122,20 @@
                                     <div class="text-xl font-extrabold text-amber-600"><span id="points-count">0</span> / <span id="target-points-display">5</span> 點</div>
                                 </div>
                             </div>
-                            <!-- Admin manual reset button -->
-                            <button onclick="openManualResetModal()" title="館員手動重置進度" class="px-3 py-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl border border-slate-200 hover:border-amber-200 transition flex items-center gap-1.5 text-xs font-bold">
-                                <i data-lucide="rotate-ccw" class="w-4 h-4 text-amber-500"></i>
-                                <span>重置進度</span>
-                            </button>
-                            <!-- Switch/Reset Reader button on the right of Reset Progress -->
-                            <button onclick="openLogoutModal()" title="結束本次任務並清除資料回到起始畫面" class="px-3 py-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 hover:border-rose-200 transition flex items-center gap-1.5 text-xs font-bold">
-                                <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i>
-                                <span>結束並登出</span>
-                            </button>
+                            
+                            <!-- Control buttons container (Hidden when user is redeemed) -->
+                            <div id="user-controls-container" class="flex items-center gap-2">
+                                <!-- Admin manual reset button -->
+                                <button onclick="openManualResetModal()" title="館員手動重置進度" class="px-3 py-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl border border-slate-200 hover:border-amber-200 transition flex items-center gap-1.5 text-xs font-bold">
+                                    <i data-lucide="rotate-ccw" class="w-4 h-4 text-amber-500"></i>
+                                    <span>重置進度</span>
+                                </button>
+                                <!-- Switch/Reset Reader button on the right of Reset Progress -->
+                                <button onclick="openLogoutModal()" title="結束本次任務並清除資料回到起始畫面" class="px-3 py-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 hover:border-rose-200 transition flex items-center gap-1.5 text-xs font-bold">
+                                    <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i>
+                                    <span>結束並登出</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -185,10 +189,6 @@
                                 <i data-lucide="camera" class="w-5 h-5"></i>
                                 <span>開啟相機掃描 QR Code</span>
                             </button>
-                            <button onclick="triggerSimulatedScan()" class="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-blue-100 text-xs font-bold transition border border-white/10 flex items-center gap-1.5">
-                                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-                                <span>[快速測試] 模擬成功掃條碼</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -225,7 +225,7 @@
 
         </section>
 
-        <section id="admin-view" class="hidden space-y-6">
+        <section id="admin-view" class="hidden space-y-6 w-full max-w-6xl mx-auto">
 
             <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
@@ -234,10 +234,14 @@
                             <i data-lucide="settings" class="w-6 h-6 text-blue-600"></i>
                             <span>圖書館資料庫任務後台管理</span>
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">設定發放點數目標、資料庫題庫內容與列印各關卡專屬 QR Code</p>
+                        <p class="text-xs text-slate-500 mt-1">設定發放點數目標、資料庫題庫內容與下載各關卡高畫質 QR Code 圖檔</p>
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="downloadAllQRCodes()" class="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition flex items-center gap-1.5">
+                            <i data-lucide="images" class="w-4 h-4"></i>
+                            <span>批次下載全任務 QR Code</span>
+                        </button>
                         <button onclick="logoutAdmin()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5" title="鎖定管理後台">
                             <i data-lucide="lock" class="w-4 h-4 text-blue-600"></i>
                             <span>鎖定後台</span>
@@ -296,16 +300,16 @@
                 <div class="space-y-3 pt-4 border-t border-slate-100">
                     <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-1.5">
                         <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
-                        <span>讀者解密闖關進度紀錄</span>
+                        <span>挑戰者解密闖關進度紀錄</span>
                     </h3>
 
                     <div class="overflow-x-auto rounded-2xl border border-slate-200/80">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-50 text-[11px] font-bold text-slate-500 border-b border-slate-200">
-                                    <th class="px-4 py-3">讀者姓名</th>
-                                    <th class="px-4 py-3">證號 / 學工號</th>
-                                    <th class="px-4 py-3">學院 / 系所單位</th>
+                                    <th class="px-4 py-3">挑戰者姓名</th>
+                                    <th class="px-4 py-3">員工編號</th>
+                                    <th class="px-4 py-3">單位名稱</th>
                                     <th class="px-4 py-3">獲得點數</th>
                                     <th class="px-4 py-3">狀態</th>
                                     <th class="px-4 py-3">最後解密時間</th>
@@ -390,7 +394,7 @@
 
             <div>
                 <h3 class="text-xl font-extrabold text-slate-900">館員重置進度</h3>
-                <p class="text-xs text-slate-500 mt-1">請輸入館員密碼以清除該讀者目前集點與兌換紀錄。</p>
+                <p class="text-xs text-slate-500 mt-1">請輸入館員密碼以清除該挑戰者目前集點與兌換紀錄。</p>
             </div>
 
             <div>
@@ -444,7 +448,7 @@
 
             <div>
                 <h3 class="text-xl font-extrabold text-slate-900">結束並登出任務</h3>
-                <p class="text-xs text-slate-500 mt-1">確定要結束本次任務嗎？將清除目前讀者資料與闖關集點進度，返回填寫讀者基本資料的起始畫面。</p>
+                <p class="text-xs text-slate-500 mt-1">確定要結束本次任務嗎？將清除目前挑戰者資料與闖關集點進度，返回填寫基本資料的起始畫面。</p>
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
@@ -600,15 +604,16 @@
             const lastReset = localStorage.getItem('qr_last_reset_date');
 
             if (lastReset !== today) {
-                console.log('New day detected! Resetting daily library database scan logs...');
-                if (currentUser && currentUser.scans) {
-                    Object.keys(currentUser.scans).forEach(code => {
-                        if (currentUser.scans[code] !== today) {
-                            delete currentUser.scans[code];
-                        }
-                    });
+                console.log('New day detected! Resetting daily library database scan logs and redemptions...');
+                if (currentUser) {
+                    // 徹底清除所有掃描紀錄、兌換狀態與兌換時間
+                    currentUser.scans = {};
                     currentUser.redeemed = false;
-                    localStorage.setItem('qr_current_user', JSON.stringify(currentUser));
+                    currentUser.redeemedAt = null;
+                    
+                    // 每日零點為該挑戰者重新隨機抽題並重洗 A-E 關卡順序
+                    generateUserRandomSequence();
+                    saveCurrentUserData();
                 }
                 localStorage.setItem('qr_last_reset_date', today);
             }
@@ -782,7 +787,7 @@
         function confirmLogoutAndResetAll() {
             closeLogoutModal();
 
-            // 如果有讀者資料，從本地紀錄中清除當前讀者的個別記錄
+            // 如果有挑戰者資料，從本地紀錄中清除當前挑戰者的個別記錄
             if (currentUser && currentUser.empId && participantsData[currentUser.empId]) {
                 delete participantsData[currentUser.empId];
                 localStorage.setItem('qr_participants_log', JSON.stringify(participantsData));
@@ -804,7 +809,7 @@
             const redeemedStamp = document.getElementById('redeemed-stamp');
             if (redeemedStamp) redeemedStamp.classList.add('hidden');
 
-            // 確保切換回讀者填寫基本資料的起始頁面
+            // 確保切換回填寫基本資料的起始頁面
             switchView('player');
             initAppUI();
         }
@@ -864,6 +869,14 @@
 
             const activeMissionCard = document.getElementById('active-mission-card');
             const prizeVoucherCard = document.getElementById('prize-voucher-card');
+            const userControlsContainer = document.getElementById('user-controls-container');
+
+            // 條件：已兌換狀態隱藏「結束並登出」及「重置進度」按鈕
+            if (currentUser.redeemed) {
+                if (userControlsContainer) userControlsContainer.classList.add('hidden');
+            } else {
+                if (userControlsContainer) userControlsContainer.classList.remove('hidden');
+            }
 
             if (pointsCount >= targetPoints || !nextMissionCode) {
                 activeMissionCard.classList.add('hidden');
@@ -1009,11 +1022,6 @@
             }, 1200);
         }
 
-        function triggerSimulatedScan() {
-            const currentRequiredCode = document.getElementById('mission-qr-code-target').textContent;
-            processScannedCode(currentRequiredCode);
-        }
-
         function showScanFeedback(text, color) {
             const msgEl = document.getElementById('scan-feedback-msg');
             const colorClass = color === 'emerald' ? 'text-emerald-400' : (color === 'amber' ? 'text-amber-400' : 'text-rose-400');
@@ -1069,7 +1077,7 @@
 
                 closeManualResetModal();
                 renderPointsGridAndCurrentMission();
-                alert("🔄 已成功由館員手動重置該讀者解密集點進度與抽題紀錄！");
+                alert("🔄 已成功由館員手動重置該挑戰者解密集點進度與抽題紀錄！");
             } else {
                 document.getElementById('reset-error-msg').classList.remove('hidden');
             }
@@ -1139,9 +1147,13 @@
                             </div>
                         </div>
 
-                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex flex-col items-center justify-center pt-3">
+                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex flex-col items-center justify-center pt-3 gap-2">
                             <div id="${qrContainerId}" class="p-2 bg-white rounded-xl shadow-sm border border-slate-200"></div>
-                            <span class="text-[10px] font-mono font-bold text-slate-400 mt-2">掃描識別碼: ${t.code}</span>
+                            <span class="text-[10px] font-mono font-bold text-slate-400">掃描碼: ${t.code}</span>
+                            <button onclick="downloadSingleQRHD('${t.code}', '${t.name}')" class="w-full mt-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <span>下載高畫質 PNG</span>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1168,6 +1180,77 @@
             lucide.createIcons();
         }
 
+        // 下載單張高畫質 QR Code PNG (800x800)
+        function downloadSingleQRHD(code, name) {
+            const tempDiv = document.createElement('div');
+            tempDiv.style.display = 'none';
+            document.body.appendChild(tempDiv);
+
+            new QRCode(tempDiv, {
+                text: code,
+                width: 700,
+                height: 700,
+                colorDark: "#0f172a",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                const qrImg = tempDiv.querySelector('img') || tempDiv.querySelector('canvas');
+                if (!qrImg) {
+                    tempDiv.remove();
+                    return;
+                }
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 800;
+                canvas.height = 920;
+
+                // 繪製白色底卡
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 標題區域
+                ctx.fillStyle = "#1e293b";
+                ctx.font = "bold 32px 'Plus Jakarta Sans', system-ui, sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(`圖書館資料庫解密任務 - ${code}`, 400, 55);
+
+                ctx.font = "normal 22px system-ui, sans-serif";
+                ctx.fillStyle = "#64748b";
+                ctx.fillText(name, 400, 95);
+
+                // 繪製 QR Code (置中)
+                if (qrImg.tagName === 'IMG') {
+                    ctx.drawImage(qrImg, 50, 120, 700, 700);
+                } else {
+                    ctx.drawImage(qrImg, 50, 120, 700, 700);
+                }
+
+                // 底部識別碼文字
+                ctx.font = "bold 28px monospace";
+                ctx.fillStyle = "#2563eb";
+                ctx.fillText(`TOKEN: ${code}`, 400, 875);
+
+                const a = document.createElement('a');
+                a.download = `QR_${code}_HD.png`;
+                a.href = canvas.toDataURL('image/png');
+                a.click();
+
+                tempDiv.remove();
+            }, 250);
+        }
+
+        // 批次下載 A-E 全套高畫質 QR Code
+        function downloadAllQRCodes() {
+            tasks.forEach((t, idx) => {
+                setTimeout(() => {
+                    downloadSingleQRHD(t.code, t.name);
+                }, idx * 350);
+            });
+        }
+
         function renderParticipantsTable() {
             const tbody = document.getElementById('participants-table-body');
             if (!tbody) return;
@@ -1175,7 +1258,7 @@
 
             const logs = Object.values(participantsData);
             if (logs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-xs italic">尚無讀者記錄</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-xs italic">尚無挑戰者記錄</td></tr>`;
                 return;
             }
 
@@ -1314,7 +1397,7 @@
         }
 
         function clearAllDataPrompt() {
-            if (confirm("警告：這將會清除所有測試的讀者記錄，確定嗎？")) {
+            if (confirm("警告：這將會清除所有測試的挑戰者記錄，確定嗎？")) {
                 participantsData = {};
                 localStorage.removeItem('qr_participants_log');
                 renderAdminDashboard();
@@ -1328,7 +1411,7 @@
                 return;
             }
 
-            let csvContent = "\uFEFF讀者姓名,證號/學工號,學院系所單位,獲得點數,當前目標,兌換狀態,最後解密時間\n";
+            let csvContent = "\uFEFF挑戰者姓名,員工編號,單位名稱,獲得點數,當前目標,兌換狀態,最後解密時間\n";
             logs.forEach(p => {
                 csvContent += `"${p.name}","${p.empId}","${p.dept}",${p.scansCount},${targetPoints},"${p.redeemed ? '已核銷' : '未兌換'}","${p.lastScanTime || ''}"\n`;
             });
