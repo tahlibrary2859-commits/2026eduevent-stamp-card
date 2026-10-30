@@ -329,7 +329,7 @@
 
     <!-- Modal 1: Scanner Modal -->
     <div id="scanner-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-md text-slate-800 space-y-4 relative shadow-2xl">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-lg text-slate-800 space-y-4 relative shadow-2xl">
             <button onclick="closeScannerModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
@@ -339,7 +339,7 @@
                 <p class="text-xs text-slate-500 mt-1">請將鏡頭對準館內標示為 <span id="scan-modal-target-code" class="font-mono font-bold text-blue-600">TASK_A</span> 的 QR Code</p>
             </div>
 
-            <div class="bg-slate-900 rounded-2xl overflow-hidden aspect-square relative flex items-center justify-center border border-slate-700">
+            <div class="bg-slate-900 rounded-2xl overflow-hidden aspect-square relative flex items-center justify-center border border-slate-700 w-full max-w-sm sm:max-w-md mx-auto">
                 <div id="qr-reader-box" class="w-full h-full"></div>
             </div>
 
@@ -517,15 +517,11 @@
             { 
                 id: 't4', 
                 code: 'TASK_D', 
-                name: 'D 題組：凌網知識中文電子書專區', 
+                name: 'D 題組：碩睿資訊 Cochrane 資料庫專區', 
                 questions: [
                     { 
-                        title: '今日參展中有一家是本院中文電子書平台其中之一，請問是哪一個平台？', 
-                        desc: '凌網知識-請至該攤位回答正確的資料庫名稱即可獲得1點' 
-                    },
-                    { 
-                        title: '這個資料庫主要為院內中文圖書的電子書平台之一，請問是哪個一個平台？', 
-                        desc: '凌網知識-請至該攤位回答正確的資料庫名稱即可獲得1點' 
+                        title: '本院購買的資料庫中，內容以《Cochrane Database of Systematic Reviews (CDSR)》系統性評論為主，其次包含《Cochrane Central Register of Controlled Trials (CENTRAL)》隨機對照試驗書目資料，及《Cochrane Clinical Answers (CCAs)》臨床解答重點，為實證醫學研究者提供具參考價值的資源，請問是哪個資料庫？', 
+                        desc: '碩睿資訊-請至該攤位回答正確的資料庫名稱即可獲得1點' 
                     }
                 ]
             },
@@ -550,6 +546,7 @@
         let isAdminAuthenticated = false;
 
         let html5QrcodeScanner = null;
+        let isScannerStarting = false;
         let countdownTimerInterval = null;
 
         // Initialize App on DOM Load
@@ -933,29 +930,71 @@
             }, 300);
         }
 
-        function closeScannerModal() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    html5QrcodeScanner.clear();
-                    html5QrcodeScanner = null;
-                }).catch(err => console.log(err));
-            }
+        async function closeScannerModal() {
             document.getElementById('scanner-modal').classList.add('hidden');
+
+            if (html5QrcodeScanner) {
+                try {
+                    // 檢查相機是否正在掃描或已啟動
+                    const isScanning = typeof html5QrcodeScanner.isScanning === 'boolean'
+                        ? html5QrcodeScanner.isScanning
+                        : (html5QrcodeScanner.getState && html5QrcodeScanner.getState() === 2); // 2: SCANNING
+
+                    if (isScanning) {
+                        await html5QrcodeScanner.stop();
+                    }
+                    await html5QrcodeScanner.clear();
+                } catch (err) {
+                    console.warn("Scanner stopped safely:", err);
+                } finally {
+                    html5QrcodeScanner = null;
+                    isScannerStarting = false;
+                }
+            }
         }
 
         function startCameraScanner() {
-            if (html5QrcodeScanner) return;
+            if (html5QrcodeScanner || isScannerStarting) return;
 
-            html5QrcodeScanner = new Html5Qrcode("qr-reader-box");
-            const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+            isScannerStarting = true;
+            const scannerInstance = new Html5Qrcode("qr-reader-box");
+            html5QrcodeScanner = scannerInstance;
 
-            html5QrcodeScanner.start(
+            // 動態計算對焦框尺寸，依據視窗寬高自動取 75%，最大支援 320x320，提升對焦面積與辨識速度
+            const qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
+                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                const boxSize = Math.floor(minEdge * 0.78);
+                const finalSize = Math.max(260, Math.min(boxSize, 340));
+                return {
+                    width: finalSize,
+                    height: finalSize
+                };
+            };
+
+            const config = { 
+                fps: 15, 
+                qrbox: qrboxFunction,
+                aspectRatio: 1.0
+            };
+
+            scannerInstance.start(
                 { facingMode: "environment" },
                 config,
                 onScanSuccess
-            ).catch(err => {
+            ).then(() => {
+                isScannerStarting = false;
+            }).catch(err => {
+                isScannerStarting = false;
                 console.warn("Camera start failed, fallback to file upload or manual.", err);
-                document.getElementById('scan-feedback-msg').innerHTML = `<span class="text-amber-400">無法啟動相機，請使用下方選擇照片上傳 QR Code</span>`;
+                // 若啟動失敗且相機實例仍存在，進行清理
+                if (html5QrcodeScanner === scannerInstance) {
+                    try { scannerInstance.clear(); } catch(e) {}
+                    html5QrcodeScanner = null;
+                }
+                const feedbackEl = document.getElementById('scan-feedback-msg');
+                if (feedbackEl) {
+                    feedbackEl.innerHTML = `<span class="text-amber-400">無法啟動相機，請使用下方選擇照片上傳 QR Code</span>`;
+                }
             });
         }
 
@@ -967,12 +1006,31 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            const html5QrCode = new Html5Qrcode("qr-reader-box");
-            html5QrCode.scanFile(file, true)
+            // 若相機正在運行先安全暫停或停止
+            if (html5QrcodeScanner) {
+                const isScanning = typeof html5QrcodeScanner.isScanning === 'boolean'
+                    ? html5QrcodeScanner.isScanning
+                    : (html5QrcodeScanner.getState && html5QrcodeScanner.getState() === 2);
+                if (isScanning) {
+                    html5QrcodeScanner.stop().catch(() => {}).finally(() => {
+                        html5QrcodeScanner = null;
+                        scanFromFile(file);
+                    });
+                    return;
+                }
+            }
+            scanFromFile(file);
+        }
+
+        function scanFromFile(file) {
+            const fileScanner = new Html5Qrcode("qr-reader-box");
+            fileScanner.scanFile(file, true)
                 .then(decodedText => {
+                    fileScanner.clear();
                     processScannedCode(decodedText.trim());
                 })
                 .catch(err => {
+                    try { fileScanner.clear(); } catch(e) {}
                     showScanFeedback("無法識別該圖片中的 QR Code，請重試", "rose");
                 });
         }
